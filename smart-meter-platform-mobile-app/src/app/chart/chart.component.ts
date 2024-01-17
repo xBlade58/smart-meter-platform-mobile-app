@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ChartConfiguration, ChartOptions } from 'chart.js';
+import { ChartService } from './chart.service';
+import { ChartType } from './types';
 
 @Component({
   selector: 'app-chart',
@@ -13,16 +15,18 @@ export class ChartComponent implements OnInit {
   };
   public lineChartLegend = true;
   public households: { street: string; id: string }[] = [];
+  public startDate: Date | any;
+  public endDate: Date | any;
+  public household: string | any;
 
-  constructor() {}
+  constructor(private chartService: ChartService) {}
 
   ngOnInit() {
     this.getHouseholds();
   }
 
   public handleChange(event: any): void {
-    console.log(event.target.value); // Use for req
-    this.initData();
+    this.household = event.target.value;
   }
 
   private getHouseholds(): void {
@@ -33,12 +37,31 @@ export class ChartComponent implements OnInit {
     ];
   }
 
-  private initData(): void {
+  public displayChart(): void {
+    if (this.household && this.startDate && this.endDate) {
+      let data = this.chartService.getData(
+        this.household,
+        this.startDate,
+        this.endDate
+      );
+      this.initData(data);
+    } else {
+      //TODO
+      let data = this.chartService.getData(
+        this.household,
+        new Date(),
+        new Date()
+      );
+      this.initData(data);
+    }
+  }
+
+  private initData(data: ChartType): void {
     this.lineChartData = {
-      labels: ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00'],
+      labels: data.labels,
       datasets: [
         {
-          data: [65, 59, 80, 81, 56, 55, 40],
+          data: data.powerConsumption,
           label: 'Power Consumption',
           fill: true,
           tension: 0.5,
@@ -47,7 +70,7 @@ export class ChartComponent implements OnInit {
           stepped: true,
         },
         {
-          data: [65, 59, 80, 81, 56, 55, 40].map((x) => x * 0.2),
+          data: data.powerConsumption.map((x) => x * 0.2),
           label: 'Costs',
           fill: false,
           tension: 0.5,

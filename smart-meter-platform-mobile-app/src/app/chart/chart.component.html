@@ -18,6 +18,23 @@
       >
     </ion-select>
   </ion-item>
+  <ion-item>
+    <ion-input
+      type="date"
+      label="Startdate"
+      label-placement="floating"
+      [value]="startDate"
+    ></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-input
+      type="date"
+      label="Enddate"
+      label-placement="floating"
+      [value]="endDate"
+    ></ion-input>
+  </ion-item>
+  <ion-button expand="block" (click)="displayChart()">Display Chart</ion-button>
   <canvas
     baseChart
     [type]="'line'"
@@ -27,3 +44,4 @@
   >
   </canvas>
 </ion-content>
+<!-- FILTER Startdate enddate im format yyyy-mm-ddThh:mm:ss -->
