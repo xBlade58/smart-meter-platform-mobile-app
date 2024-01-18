@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ChartConfiguration, ChartOptions } from 'chart.js';
 import { ChartService } from './chart.service';
 import { ChartType } from './types';
+import { ToastController } from '@ionic/angular';
+import { BroadcasterService } from '../broadcaster.service';
 
 @Component({
   selector: 'app-chart',
@@ -15,13 +17,21 @@ export class ChartComponent implements OnInit {
   };
   public lineChartLegend = true;
   public households: { street: string; id: string }[] = [];
-  public startDate: Date | any;
-  public endDate: Date | any;
+  public startDate: string | any = '05-06-2023';
+  public endDate: string | any = '05-07-2023';
   public household: string | any;
+  public showProgressBar: boolean = false;
 
-  constructor(private chartService: ChartService) {}
+  constructor(
+    private chartService: ChartService,
+    private toastController: ToastController,
+    private broadcaster: BroadcasterService
+  ) {}
 
   ngOnInit() {
+    this.broadcaster.userIdChanged$.subscribe((data) => {
+      if (data) this.getHouseholds();
+    });
     this.getHouseholds();
   }
 
@@ -29,30 +39,30 @@ export class ChartComponent implements OnInit {
     this.household = event.target.value;
   }
 
-  private getHouseholds(): void {
-    this.households = [
-      { street: 'Marktstraße 14', id: '1' },
-      { street: 'Hegergasse 1', id: '2' },
-      { street: 'Radetzkystraße 92a', id: '3' },
-    ];
+  public handleStartDateChange(event: any): void {
+    this.startDate = event.target.value;
   }
 
-  public displayChart(): void {
+  public handleEndDateChange(event: any): void {
+    this.endDate = event.target.value;
+  }
+
+  private async getHouseholds() {
+    this.households = await this.chartService.getHouseholds();
+  }
+
+  public async displayChart(): Promise<void> {
     if (this.household && this.startDate && this.endDate) {
-      let data = this.chartService.getData(
+      this.showProgressBar = true;
+      let data = await this.chartService.getData(
         this.household,
-        this.startDate,
-        this.endDate
+        new Date(this.startDate),
+        new Date(this.endDate)
       );
+      this.showProgressBar = false;
       this.initData(data);
     } else {
-      //TODO
-      let data = this.chartService.getData(
-        this.household,
-        new Date(),
-        new Date()
-      );
-      this.initData(data);
+      this.presentToast('Inputs are not complete!');
     }
   }
 
@@ -70,7 +80,7 @@ export class ChartComponent implements OnInit {
           stepped: true,
         },
         {
-          data: data.powerConsumption.map((x) => x * 0.2),
+          data: data.powerConsumption.map((x) => x * ChartService.energyPrice),
           label: 'Costs',
           fill: false,
           tension: 0.5,
@@ -81,4 +91,15 @@ export class ChartComponent implements OnInit {
       ],
     };
   }
+
+  private async presentToast(message: string) {
+    const toast = await this.toastController.create({
+      message: message,
+      duration: 3000,
+      position: 'bottom',
+    });
+
+    await toast.present();
+  }
 }
+// TODO broadcaster

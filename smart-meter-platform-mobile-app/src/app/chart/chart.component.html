@@ -24,6 +24,7 @@
       label="Startdate"
       label-placement="floating"
       [value]="startDate"
+      (change)="handleStartDateChange($event)"
     ></ion-input>
   </ion-item>
   <ion-item>
@@ -32,9 +33,14 @@
       label="Enddate"
       label-placement="floating"
       [value]="endDate"
+      (change)="handleEndDateChange($event)"
     ></ion-input>
   </ion-item>
   <ion-button expand="block" (click)="displayChart()">Display Chart</ion-button>
+  <ion-progress-bar
+    *ngIf="showProgressBar"
+    type="indeterminate"
+  ></ion-progress-bar>
   <canvas
     baseChart
     [type]="'line'"
@@ -44,4 +50,3 @@
   >
   </canvas>
 </ion-content>
-<!-- FILTER Startdate enddate im format yyyy-mm-ddThh:mm:ss -->
