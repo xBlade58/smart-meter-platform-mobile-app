@@ -24,7 +24,7 @@ export class SettingsComponent implements OnInit {
   }
 
   public handleEnergyPriceChange(event: any): void {
-    this.energyPrice = event.target.value / 100;
+    this.energyPrice = event.target.value;
     this.chartService.setEnergyPrice(this.energyPrice);
   }
 }

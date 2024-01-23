@@ -80,7 +80,9 @@ export class ChartComponent implements OnInit {
           stepped: true,
         },
         {
-          data: data.powerConsumption.map((x) => x * ChartService.energyPrice),
+          data: data.powerConsumption.map(
+            (x) => x * (ChartService.energyPrice / 100)
+          ),
           label: 'Costs',
           fill: false,
           tension: 0.5,

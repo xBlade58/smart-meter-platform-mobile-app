@@ -16,7 +16,7 @@ export class ChartService {
   private platformUrl = environment.platformUrl;
   private householdUrl = environment.householdUrl;
   private households: { street: string; id: string }[] = [];
-  public static userId: string | any = '26bee12b-f97a-4295-a34b-91f857f2e67f';
+  public static userId: string | any = '';
   public static energyPrice: number | any;
 
   async getData(
@@ -49,7 +49,13 @@ export class ChartService {
     let labels: string[] = [];
     let powerConsumption: number[] = [];
     timeAndPowerList.forEach((timeAndPowerEntry) => {
-      labels.push(timeAndPowerEntry.time.getTime().toString());
+      labels.push(
+        `${timeAndPowerEntry.time.getHours()}:${
+          timeAndPowerEntry.time.getMinutes() < 10
+            ? timeAndPowerEntry.time.getMinutes().toString() + '0'
+            : timeAndPowerEntry.time.getMinutes().toString()
+        }`
+      );
       powerConsumption.push(timeAndPowerEntry.power);
     });
 
@@ -64,8 +70,7 @@ export class ChartService {
     startDate: string,
     endDate: string
   ): Promise<MeterReading[]> {
-    let meterId = 'b52ac10f-58cc-6172-a567-0e02b2c3d479';
-    let url = `${this.platformUrl}/forInterval?meterId=${meterId}&startDate=${startDate}&endDate=${endDate}`;
+    let url = `${this.platformUrl}/forInterval?householdId=${household}&startDate=${startDate}&endDate=${endDate}`;
     return new Promise<MeterReading[]>((resolve, reject) => {
       this.httpClient.get(url).subscribe(
         (data) => {
@@ -83,7 +88,7 @@ export class ChartService {
   }
 
   async sendRequestHouseholds(): Promise<{ street: string; id: string }[]> {
-    let userId = 'b52ac10f-58cc-6172-a567-0e02b2c3d479';
+    if (!ChartService.userId) return [];
     let url = `${this.householdUrl}/getHouseholdsFromUser/${ChartService.userId}`;
     return new Promise<{ street: string; id: string }[]>((resolve, reject) => {
       this.httpClient.get(url).subscribe(
