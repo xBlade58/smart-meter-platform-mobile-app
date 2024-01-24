@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Settings</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item>
+      <ion-input
+        label="User ID"
+        [value]="userId"
+        (change)="handleUserIdChange($event)"
+        labelPlacement="floating"
+      ></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input
+        label="Energy Price (in ct)"
+        [value]="energyPrice"
+        type="number"
+        (change)="handleEnergyPriceChange($event)"
+        labelPlacement="floating"
+      ></ion-input>
+    </ion-item>
+  </ion-list>
+</ion-content>

@@ -1,0 +1,52 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Overview</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-item>
+    <ion-select
+      label="Select Household"
+      interface="action-sheet"
+      label-placement="floating"
+      (ionChange)="handleChange($event)"
+    >
+      <ion-select-option
+        *ngFor="let household of households"
+        [value]="household.id"
+        >{{ household.street }}</ion-select-option
+      >
+    </ion-select>
+  </ion-item>
+  <ion-item>
+    <ion-input
+      type="date"
+      label="Startdate"
+      label-placement="floating"
+      [value]="startDate"
+      (change)="handleStartDateChange($event)"
+    ></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-input
+      type="date"
+      label="Enddate"
+      label-placement="floating"
+      [value]="endDate"
+      (change)="handleEndDateChange($event)"
+    ></ion-input>
+  </ion-item>
+  <ion-button expand="block" (click)="displayChart()">Display Chart</ion-button>
+  <ion-progress-bar
+    *ngIf="showProgressBar"
+    type="indeterminate"
+  ></ion-progress-bar>
+  <canvas
+    baseChart
+    [type]="'line'"
+    [data]="lineChartData"
+    [options]="lineChartOptions"
+    [legend]="lineChartLegend"
+  >
+  </canvas>
+</ion-content>
